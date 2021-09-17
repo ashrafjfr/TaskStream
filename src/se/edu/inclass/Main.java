@@ -16,14 +16,15 @@ public class Main {
     public static void main(String[] args) {
         DataManager dm = new DataManager("./data/data.txt");
         ArrayList<Task> tasksData = dm.loadData();
+        
+//        System.out.println("Printing deadlines");
+//        printDeadlines(tasksData);
+//
+//        System.out.println("Total number of deadlines: " + countDeadlines(tasksData));
+//        printDeadlinesUsingStream(tasksData);
+        ArrayList<Task> filteredLists = filterTasksByString(tasksData, "11");
+        printData(filteredLists);
 
-        System.out.println("Printing deadlines");
-        printDeadlines(tasksData);
-
-        System.out.println("Total number of deadlines: " + countDeadlines(tasksData));
-
-        printDeadlinesUsingStream(tasksData);
-        System.out.println("Total number of deadlines (using stream): " + countDeadlinesUsingStream(tasksData));
     }
 
     private static int countDeadlines(ArrayList<Task> tasksData) {
@@ -67,9 +68,19 @@ public class Main {
     }
 
     public static void printDeadlinesUsingStream(ArrayList<Task> tasks) {
-        System.out.println("Printing deadlines using stream");
-        tasks.stream()  //convert data into stream
-                .filter((t) -> t instanceof Deadline)  //filtering using lambda
-                .forEach(System.out::println); //terminal operator
+
+        tasks.stream()
+                .filter((t) -> t instanceof Deadline)
+                .sorted((a, b) -> a.getDescription().toLowerCase().compareTo(b.getDescription().toLowerCase()))
+                .forEach(System.out::println);
+
+        }
+    }
+
+    public static ArrayList<Task> filterTasksByString(ArrayList<Task> tasks, String filterString) {
+        ArrayList<Task> filteredList = (ArrayList<Task>) tasks.stream()
+                .filter((t) -> t.getDescription().contains(filterString))
+                .collect(Collectors.toList());
+        return filteredList;
     }
 }
